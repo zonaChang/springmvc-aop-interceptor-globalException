@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style type="text/css">
+p{
+	margin:10px 0;
+}
+span{
+	color:#ccc;
+}
+.red{
+	color:red;
+	
+}
+</style>
+<script type="text/javascript" src="resources/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript">
+$(function(){
+	$("#catchBtn").click(function(){
+		$.ajax({
+			url:"/api/function/catch/normal",
+			success: function(data){
+				console.log(JSON.stringify(data));
+			}
+		});
+	});
+	$("#catchErr").click(function(){
+		$.ajax({
+			url:"/api/function/catch/error",
+			success: function(data){
+				console.log(JSON.stringify(data));
+			}
+		});
+	});
+	$("#catchAndThrowBtn").click(function(){
+		$.ajax({
+			url:"/api/function/catchAndThrow/normal",
+			success: function(data){
+				console.log(JSON.stringify(data));
+			}
+		});
+	});
+	$("#catchAndThrowErr").click(function(){
+		$.ajax({
+			url:"/api/function/catchAndThrow/error",
+			success: function(data){
+				console.log(JSON.stringify(data));
+			}
+		});
+	});
+	$("#throwBtn").click(function(){
+		$.ajax({
+			url:"/api/function/throw/normal",
+			success: function(data){
+				console.log(JSON.stringify(data));
+			}
+		});
+	});
+	$("#throwErr").click(function(){
+		$.ajax({
+			url:"/api/function/throw/error",
+			success: function(data){
+				console.log(JSON.stringify(data));
+			}
+		});
+	});
+});
+</script>
+</head>
+<body>
+<div>
+为方便说明， 自定义了一下术语<br />
+around-before:环绕通知执行目标方法之前<br />
+around-after: 环绕通知执行目标方法之后<br />
+around-exception: 环绕通知执行目标方法之后,进入异常捕获语句块<br />
+target: 要执行的目标方法（controller）<br />
+</div>
+<div style="border:1px solid #CCC; margin:10px 0;">
+<p>aop环绕通知catch异常，在内部处理<br />
+<span>程序执行流程：拦截器preHandle-->aop around-before-->target-->aop around-after-->拦截器 postHandle--> 拦截器afterCompletion</span>
+</p>
+<button id="catchBtn">catchBtn</button><br /><br />
+<button id="catchErr">catchErr</button>
+</div>
+<div style="border:1px solid #CCC; margin:10px 0;">
+<p class="red">以下两种情况的程序执行流程一样</p>
+<p>aop环绕通知catch异常并抛出新的异常<br />
+<span>程序执行流程：拦截器preHandle-->aop around-before-->target-->aop around-exception-->全局异常处理器(<i class="red">注意没有在执行拦截器的postHandle</i>)--> 拦截器afterCompletion</span>
+</p>
+<button id="catchAndThrowBtn">catchAndThrowBtn</button><br /><br />
+<button id="catchAndThrowErr">catchAndThrowErr</button>
+<br/>
+<hr  style="width:95%; text-align:center"/>
+<br />
+<p>aop环绕通知catch直接将异常throw到上层<br />
+<span>程序执行流程：拦截器preHandle-->aop around-before-->target-->aop around-exception-->全局异常处理器(<i class="red">注意没有在执行拦截器的postHandle</i>)--> 拦截器afterCompletion</span>
+</p>
+<button id="throwBtn">throwBtn</button><br /><br />
+<button id="throwErr">throwErr</button>
+</div>
+</body>
+</html>

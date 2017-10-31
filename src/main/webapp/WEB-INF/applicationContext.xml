@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.2.xsd
+        http://www.springframework.org/schema/aop  
+        http://www.springframework.org/schema/aop/spring-aop-4.2.xsd">
+    
+    <context:component-scan base-package="com.carl.function" />
+    <mvc:annotation-driven />
+    <mvc:default-servlet-handler/>
+    
+    <mvc:interceptors>
+    	<!-- 
+    		多个拦截器执行顺序
+    			1: 请求阶段，按照定义顺序的正向从上往下执行
+    			2: 响应阶段， 按照定义顺序的逆向从下往上执行
+    			注意： 不是先执行第一个拦截器， 在执行第二个拦截器
+    	 -->
+    	<mvc:interceptor>
+    		<!-- 那些请求需要经过拦截器 -->
+    		<mvc:mapping path="/api/**"/>
+    		<!-- 那些请求不用经过给拦截器 -->
+<!--     		<mvc:exclude-mapping path=""/> -->
+    		<bean class="com.carl.function.interceptor.FunctionInterceptor" />
+    	</mvc:interceptor>
+    	<mvc:interceptor>
+    		<mvc:mapping path="/api/**"/>
+    		<bean class="com.carl.function.interceptor.PowerInterceptor" />
+    	</mvc:interceptor>
+    </mvc:interceptors>
+    
+    <!-- 全局异常处理 -->
+    <bean class="com.carl.function.exception.GlobalException"/>
+    
+    <!-- aop模块 start -->
+    <bean id="functionAop" class="com.carl.function.aop.FunctionAop"></bean>
+    <aop:config>
+    	<aop:aspect ref="functionAop">
+    		<aop:pointcut id="catchAndThrowPoint" expression="execution(* com.carl.function.controller.FunctionCatchAndThrowController.*(..))"/>
+    		<aop:pointcut id="catchPoint" expression="execution(* com.carl.function.controller.FunctionCatchController.*(..))"/>
+    		<aop:pointcut id="throwPoint" expression="execution(* com.carl.function.controller.FunctionThrowController.*(..))"/>
+    		<aop:around method="aroundCatchExceptionAndThrowNewExcpetion" pointcut-ref="catchAndThrowPoint"/>
+    		<aop:around method="aroundCatchException" pointcut-ref="catchPoint"/>
+    		<aop:around method="aroundThrowsException" pointcut-ref="throwPoint"/>
+    	</aop:aspect>
+    </aop:config>
+    <!-- aop模块 end -->
+</beans>
